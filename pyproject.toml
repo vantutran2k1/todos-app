@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "todos-app"
+version = "0.1.0"
+description = ""
+authors = ["vantutran2k1 <vantu.tran2k1@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+dotenv = "^0.9.9"
+pydantic = "^2.11.7"
+black = "^25.1.0"
+sqlalchemy = "^2.0.41"
+alembic = "^1.16.4"
+pydantic-settings = "^2.10.1"
+psycopg2-binary = "^2.9.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
