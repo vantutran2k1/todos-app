@@ -8,12 +8,16 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 dotenv = "^0.9.9"
-pydantic = "^2.11.7"
+pydantic = {extras = ["email"], version = "^2.11.7"}
 black = "^25.1.0"
 sqlalchemy = "^2.0.41"
 alembic = "^1.16.4"
 pydantic-settings = "^2.10.1"
 psycopg2-binary = "^2.9.10"
+passlib = "^1.7.4"
+fastapi = "^0.116.1"
+uvicorn = "^0.35.0"
+bcrypt = "3.2.0"
 
 
 [build-system]
