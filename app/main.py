@@ -4,6 +4,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.status import HTTP_400_BAD_REQUEST
 
+from app.routers.company_router import company_router
 from app.routers.user_router import user_router
 
 app = FastAPI(
@@ -24,3 +25,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 app.include_router(router=user_router, tags=["users"], prefix="/api/v1/users")
+app.include_router(
+    router=company_router, tags=["companies"], prefix="/api/v1/companies"
+)

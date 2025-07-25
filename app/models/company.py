@@ -1,9 +1,16 @@
 import uuid
+from enum import Enum
 
 from sqlalchemy import Column, String, Float
 from sqlalchemy.dialects.postgresql.base import UUID
 
 from app.models.base import Base
+
+
+class CompanyMode(str, Enum):
+    FREE = "FREE"
+    PREMIUM = "PREMIUM"
+    ENTERPRISE = "ENTERPRISE"
 
 
 class Company(Base):
