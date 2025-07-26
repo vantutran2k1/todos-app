@@ -20,3 +20,12 @@ class CreateUserResponse(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     company_id: Optional[UUID] = None
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+class LoginResponse(BaseModel):
+    session_token: str

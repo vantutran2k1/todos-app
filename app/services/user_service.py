@@ -1,19 +1,27 @@
 from uuid import uuid4
 
 from fastapi import HTTPException
+from redis import Redis
 from sqlalchemy.orm import Session
 
 from app.models.user import User
 from app.repositories.company_repository import CompanyRepository
 from app.repositories.user_repository import UserRepository
-from app.schemas.user_schema import CreateUserRequest, CreateUserResponse
-from app.utils.security import hash_password
+from app.repositories.user_session_repository import UserSessionRepository
+from app.schemas.user_schema import (
+    CreateUserRequest,
+    CreateUserResponse,
+    LoginRequest,
+    LoginResponse,
+)
+from app.utils.security import hash_password, verify_password, generate_session_token
 
 
 class UserService:
-    def __init__(self, db: Session):
-        self._user_repo = UserRepository(db)
+    def __init__(self, db: Session, redis_client: Redis):
         self._company_repo = CompanyRepository(db)
+        self._user_repo = UserRepository(db)
+        self._user_session_repo = UserSessionRepository(redis_client)
 
     def create_user(self, request: CreateUserRequest) -> CreateUserResponse:
         if self._user_repo.get_by_email(str(request.email)):
@@ -48,3 +56,14 @@ class UserService:
             last_name=saved_user.last_name,
             company_id=saved_user.company_id,
         )
+
+    def login(self, request: LoginRequest) -> LoginResponse:
+        user = self._user_repo.get_by_username(request.username)
+        if not user:
+            raise HTTPException(status_code=400, detail="Invalid username or password")
+        if not verify_password(request.password, user.hashed_password):
+            raise HTTPException(status_code=400, detail="Invalid username or password")
+
+        token = generate_session_token()
+        self._user_session_repo.save_user_session(user.id, token)
+        return LoginResponse(session_token=token)
