@@ -10,6 +10,7 @@ from app.schemas.user_schema import (
     CreateUserResponse,
 )
 from app.utils.security import hash_password
+from app.utils.transactional import transactional
 
 
 class UserService:
@@ -21,6 +22,7 @@ class UserService:
         self._user_repo = user_repo
         self._company_repo = company_repo
 
+    @transactional
     def create_user(self, request: CreateUserRequest) -> CreateUserResponse:
         if self._user_repo.get_by_email(str(request.email)):
             raise HTTPException(status_code=409, detail="Email already in use")

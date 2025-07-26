@@ -8,16 +8,14 @@ from app.models import Company
 
 class CompanyRepository:
     def __init__(self, db: Session):
-        self.db = db
+        self._db = db
 
     def get_by_id(self, company_id: UUID) -> Optional[Company]:
-        return self.db.query(Company).filter(Company.id == company_id).first()
+        return self._db.query(Company).filter(Company.id == company_id).first()
 
     def get_by_name(self, name: str) -> Optional[Company]:
-        return self.db.query(Company).filter(Company.name == name).first()
+        return self._db.query(Company).filter(Company.name == name).first()
 
     def save(self, company: Company):
-        self.db.add(company)
-        self.db.commit()
-        self.db.refresh(company)
+        self._db.add(company)
         return company

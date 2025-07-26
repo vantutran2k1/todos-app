@@ -8,19 +8,17 @@ from app.models.user import User
 
 class UserRepository:
     def __init__(self, db: Session):
-        self.db = db
+        self._db = db
 
     def get_by_id(self, user_id: UUID) -> Optional[User]:
-        return self.db.query(User).filter(User.id == user_id).first()
+        return self._db.query(User).filter(User.id == user_id).first()
 
     def get_by_email(self, email: str) -> Optional[User]:
-        return self.db.query(User).filter(User.email == email).first()
+        return self._db.query(User).filter(User.email == email).first()
 
     def get_by_username(self, username: str) -> Optional[User]:
-        return self.db.query(User).filter(User.username == username).first()
+        return self._db.query(User).filter(User.username == username).first()
 
     def save(self, user: User) -> User:
-        self.db.add(user)
-        self.db.commit()
-        self.db.refresh(user)
+        self._db.add(user)
         return user
