@@ -1,8 +1,6 @@
 from uuid import uuid4
 
 from fastapi import HTTPException
-from redis import Redis
-from sqlalchemy.orm import Session
 
 from app.models.user import User
 from app.repositories.company_repository import CompanyRepository
@@ -18,10 +16,15 @@ from app.utils.security import hash_password, verify_password, generate_session_
 
 
 class UserService:
-    def __init__(self, db: Session, redis_client: Redis):
-        self._company_repo = CompanyRepository(db)
-        self._user_repo = UserRepository(db)
-        self._user_session_repo = UserSessionRepository(redis_client)
+    def __init__(
+        self,
+        user_repo: UserRepository,
+        company_repo: CompanyRepository,
+        user_session_repo: UserSessionRepository,
+    ):
+        self._user_repo = user_repo
+        self._company_repo = company_repo
+        self._user_session_repo = user_session_repo
 
     def create_user(self, request: CreateUserRequest) -> CreateUserResponse:
         if self._user_repo.get_by_email(str(request.email)):

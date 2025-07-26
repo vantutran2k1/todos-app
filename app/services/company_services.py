@@ -1,7 +1,6 @@
 from uuid import uuid4
 
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
 
 from app.models import Company
 from app.repositories.company_repository import CompanyRepository
@@ -9,8 +8,8 @@ from app.schemas.company_schema import CreateCompanyRequest, CreateCompanyRespon
 
 
 class CompanyService:
-    def __init__(self, db: Session):
-        self._company_repo = CompanyRepository(db)
+    def __init__(self, company_repo: CompanyRepository):
+        self._company_repo = company_repo
 
     def create_company(self, request: CreateCompanyRequest) -> CreateCompanyResponse:
         if self._company_repo.get_by_name(request.name):
