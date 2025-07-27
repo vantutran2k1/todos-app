@@ -18,6 +18,10 @@ class GetUserResponse(BaseUserResponse):
     company: Optional[GetCompanyResponse] = None
 
 
+class GetUsersResponse(BaseUserResponse):
+    company_id: Optional[UUID] = None
+
+
 class CreateUserRequest(BaseModel):
     username: str
     password: str = Field(..., min_length=8, max_length=64)

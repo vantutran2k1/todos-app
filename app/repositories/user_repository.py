@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 from sqlalchemy.orm import Session, joinedload
@@ -26,6 +26,15 @@ class UserRepository:
 
     def get_by_username(self, username: str) -> Optional[User]:
         return self._db.query(User).filter(User.username == username).first()
+
+    def get_users(self, page: int, size: int) -> (List[User], int):
+        query = self._db.query(User)
+
+        total = query.count()
+        offset = (page - 1) * size
+        users = query.offset(offset).limit(size).all()
+
+        return users, total
 
     def save(self, user: User) -> User:
         self._db.add(user)

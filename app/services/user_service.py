@@ -7,10 +7,12 @@ from app.models.user import User
 from app.repositories.company_repository import CompanyRepository
 from app.repositories.user_repository import UserRepository
 from app.schemas.company_schema import GetCompanyResponse
+from app.schemas.pagination_meta import PaginationMeta, PaginatedResponse
 from app.schemas.user_schema import (
     CreateUserRequest,
     CreateUserResponse,
     GetUserResponse,
+    GetUsersResponse,
 )
 from app.utils.security import hash_password
 from app.utils.transactional import transactional
@@ -55,6 +57,30 @@ class UserService:
             status_code=status.HTTP_200_OK,
             content=response.model_dump(mode="json", exclude_none=True),
         )
+
+    def get_users(self, page: int, size: int):
+        users, total = self._user_repo.get_users(page, size)
+        data = [
+            GetUsersResponse(
+                id=user.id,
+                username=user.username,
+                email=user.email,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                company_id=user.company_id,
+            )
+            for user in users
+        ]
+        meta = PaginationMeta(
+            page=page,
+            size=size,
+            total=total,
+            total_pages=(total + size - 1) // size,
+        )
+        response = PaginatedResponse(data=data, meta=meta).model_dump(
+            mode="json", exclude_none=True
+        )
+        return JSONResponse(status_code=status.HTTP_200_OK, content=response)
 
     @transactional
     def create_user(self, request: CreateUserRequest):

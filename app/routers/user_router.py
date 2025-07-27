@@ -18,6 +18,15 @@ def get_user(
     return user_service.get_user(user_id, include_company)
 
 
+@user_router.get("/")
+def get_users(
+    page: int = Query(1, ge=1),
+    size: int = Query(10, le=100),
+    user_service: UserService = Depends(get_user_service),
+):
+    return user_service.get_users(page, size)
+
+
 @user_router.post("/")
 def create_user(
     request: CreateUserRequest, user_service: UserService = Depends(get_user_service)
