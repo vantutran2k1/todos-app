@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from app.dependencies.auth import get_current_admin_user_id
 from app.dependencies.services import get_company_service
@@ -13,6 +13,15 @@ def get_company(
     company_id: str, company_service: CompanyService = Depends(get_company_service)
 ):
     return company_service.get_company(company_id)
+
+
+@company_router.get("/")
+def get_companies(
+    page: int = Query(1, ge=1),
+    size: int = Query(10, le=100),
+    company_service: CompanyService = Depends(get_company_service),
+):
+    return company_service.get_companies(page, size)
 
 
 @company_router.post("/")

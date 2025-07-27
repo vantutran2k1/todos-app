@@ -11,6 +11,7 @@ from app.schemas.company_schema import (
     CreateCompanyResponse,
     GetCompanyResponse,
 )
+from app.schemas.pagination_meta import PaginationMeta, PaginatedResponse
 from app.utils.transactional import transactional
 
 
@@ -36,6 +37,29 @@ class CompanyService:
             status_code=status.HTTP_200_OK,
             content=response.model_dump(mode="json", exclude_none=True),
         )
+
+    def get_companies(self, page: int, size: int):
+        companies, total = self._company_repo.get_companies(page, size)
+        data = [
+            GetCompanyResponse(
+                id=company.id,
+                name=company.name,
+                description=company.description,
+                mode=company.mode,
+                rating=company.rating,
+            )
+            for company in companies
+        ]
+        meta = PaginationMeta(
+            page=page,
+            size=size,
+            total=total,
+            total_pages=(total + size - 1) // size,
+        )
+        response = PaginatedResponse(data=data, meta=meta).model_dump(
+            mode="json", exclude_none=True
+        )
+        return JSONResponse(status_code=status.HTTP_200_OK, content=response)
 
     @transactional
     def create_company(self, request: CreateCompanyRequest):
