@@ -14,8 +14,8 @@ class UserSessionRepository:
             f"user_session:{session_token}", str(user_id), ex=settings.USER_SESSION_TTL
         )
 
-    def get_user_session(self, session_id: str) -> str:
-        return self._redis_client.get(f"user_session:{session_id}")
+    def get_user_session(self, session_token: str) -> str:
+        return self._redis_client.get(f"user_session:{session_token}")
 
-    def delete_user_session(self, session_id: str):
-        return self._redis_client.delete(f"user_session:{session_id}")
+    def delete_user_session(self, session_token: str):
+        return self._redis_client.delete(f"user_session:{session_token}")

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Request, HTTPException, status
 
+from app.dependencies.auth import get_current_user_id
 from app.dependencies.services import get_auth_service
 from app.schemas.user_schema import LoginRequest, LoginResponse
 from app.services.auth_service import AuthService
@@ -13,7 +14,11 @@ def login(request: LoginRequest, auth_service: AuthService = Depends(get_auth_se
 
 
 @auth_router.post("/logout")
-def logout(request: Request, auth_service: AuthService = Depends(get_auth_service)):
+def logout(
+    request: Request,
+    current_user: str = Depends(get_current_user_id),
+    auth_service: AuthService = Depends(get_auth_service),
+):
     token = request.headers.get("Authorization")
     if not token:
         raise HTTPException(
