@@ -6,18 +6,21 @@ from fastapi.responses import JSONResponse
 from app.models import Company
 from app.models.company import CompanyMode
 from app.repositories.company_repository import CompanyRepository
+from app.repositories.user_repository import UserRepository
 from app.schemas.company_schema import (
     CreateCompanyRequest,
     CreateCompanyResponse,
     GetCompanyResponse,
 )
 from app.schemas.pagination_meta import PaginationMeta, PaginatedResponse
+from app.schemas.user_schema import GetUsersResponse
 from app.utils.transactional import transactional
 
 
 class CompanyService:
-    def __init__(self, company_repo: CompanyRepository):
+    def __init__(self, company_repo: CompanyRepository, user_repo: UserRepository):
         self._company_repo = company_repo
+        self._user_repo = user_repo
 
     def get_company(self, company_id: str):
         company = self._company_repo.get_by_id(UUID(company_id))
@@ -49,6 +52,32 @@ class CompanyService:
                 rating=company.rating,
             )
             for company in companies
+        ]
+        meta = PaginationMeta(
+            page=page,
+            size=size,
+            total=total,
+            total_pages=(total + size - 1) // size,
+        )
+        response = PaginatedResponse(data=data, meta=meta).model_dump(
+            mode="json", exclude_none=True
+        )
+        return JSONResponse(status_code=status.HTTP_200_OK, content=response)
+
+    def get_users_of_company(self, company_id: str, page: int, size: int):
+        users, total = self._user_repo.get_users_of_company(
+            UUID(company_id), page, size
+        )
+        data = [
+            GetUsersResponse(
+                id=user.id,
+                username=user.username,
+                email=user.email,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                company_id=user.company_id,
+            )
+            for user in users
         ]
         meta = PaginationMeta(
             page=page,

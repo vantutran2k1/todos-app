@@ -24,6 +24,16 @@ def get_companies(
     return company_service.get_companies(page, size)
 
 
+@company_router.get("/{company_id}/users")
+def get_users_of_company(
+    company_id: str,
+    page: int = Query(1, ge=1),
+    size: int = Query(10, le=100),
+    company_service: CompanyService = Depends(get_company_service),
+):
+    return company_service.get_users_of_company(company_id, page, size)
+
+
 @company_router.post("/")
 def create_company(
     request: CreateCompanyRequest,

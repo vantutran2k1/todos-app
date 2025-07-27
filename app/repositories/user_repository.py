@@ -36,6 +36,17 @@ class UserRepository:
 
         return users, total
 
+    def get_users_of_company(
+        self, company_id: UUID, page: int, size: int
+    ) -> (List[User], int):
+        query = self._db.query(User).where(User.company_id == company_id)
+
+        total = query.count()
+        offset = (page - 1) * size
+        users = query.offset(offset).limit(size).all()
+
+        return users, total
+
     def save(self, user: User) -> User:
         self._db.add(user)
         return user

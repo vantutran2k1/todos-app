@@ -25,8 +25,9 @@ def get_user_service(
 
 def get_company_service(
     company_repo: CompanyRepository = Depends(get_company_repository),
+    user_repo: UserRepository = Depends(get_user_repository),
 ) -> CompanyService:
-    return CompanyService(company_repo)
+    return CompanyService(company_repo, user_repo)
 
 
 def get_auth_service(
