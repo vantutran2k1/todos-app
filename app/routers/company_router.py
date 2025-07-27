@@ -8,6 +8,13 @@ from app.services.company_service import CompanyService
 company_router = APIRouter()
 
 
+@company_router.get("/{company_id}")
+def get_company(
+    company_id: str, company_service: CompanyService = Depends(get_company_service)
+):
+    return company_service.get_company(company_id)
+
+
 @company_router.post("/")
 def create_company(
     request: CreateCompanyRequest,

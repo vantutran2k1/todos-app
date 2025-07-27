@@ -13,6 +13,17 @@ class CompanyMode(str, Enum):
     PREMIUM = "PREMIUM"
     ENTERPRISE = "ENTERPRISE"
 
+    @staticmethod
+    def from_string(value):
+        if value == "FREE":
+            return CompanyMode.FREE
+        elif value == "PREMIUM":
+            return CompanyMode.PREMIUM
+        elif value == "ENTERPRISE":
+            return CompanyMode.ENTERPRISE
+        else:
+            raise NotImplementedError(f"Unknown company mode {value}")
+
 
 class Company(Base):
     __tablename__ = "companies"

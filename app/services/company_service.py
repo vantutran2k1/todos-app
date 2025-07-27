@@ -1,17 +1,41 @@
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 
 from app.models import Company
+from app.models.company import CompanyMode
 from app.repositories.company_repository import CompanyRepository
-from app.schemas.company_schema import CreateCompanyRequest, CreateCompanyResponse
+from app.schemas.company_schema import (
+    CreateCompanyRequest,
+    CreateCompanyResponse,
+    GetCompanyResponse,
+)
 from app.utils.transactional import transactional
 
 
 class CompanyService:
     def __init__(self, company_repo: CompanyRepository):
         self._company_repo = company_repo
+
+    def get_company(self, company_id: str):
+        company = self._company_repo.get_by_id(UUID(company_id))
+        if not company:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Company not found"
+            )
+
+        response = GetCompanyResponse(
+            id=company.id,
+            name=company.name,
+            description=company.description,
+            mode=CompanyMode.from_string(company.mode),
+            rating=company.rating,
+        )
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=response.model_dump(mode="json", exclude_none=True),
+        )
 
     @transactional
     def create_company(self, request: CreateCompanyRequest):
