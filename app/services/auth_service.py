@@ -18,9 +18,15 @@ class AuthService:
     def login(self, request: LoginRequest) -> LoginResponse:
         user = self._user_repo.get_by_username(request.username)
         if not user:
-            raise HTTPException(status_code=400, detail="Invalid username or password")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid username or password",
+            )
         if not verify_password(request.password, user.hashed_password):
-            raise HTTPException(status_code=400, detail="Invalid username or password")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid username or password",
+            )
 
         session_token = generate_session_token()
         self._user_session_repo.save_user_session(user.id, session_token)
