@@ -3,6 +3,7 @@ from enum import Enum
 
 from sqlalchemy import Column, String, Float
 from sqlalchemy.dialects.postgresql.base import UUID
+from sqlalchemy.orm import relationship
 
 from app.models.base import Base
 
@@ -21,3 +22,5 @@ class Company(Base):
     description = Column(String)
     mode = Column(String)
     rating = Column(Float)
+
+    users = relationship("User", back_populates="company")

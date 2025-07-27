@@ -1,4 +1,4 @@
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
@@ -6,9 +6,11 @@ from fastapi.responses import JSONResponse
 from app.models.user import User
 from app.repositories.company_repository import CompanyRepository
 from app.repositories.user_repository import UserRepository
+from app.schemas.company_schema import GetCompanyResponse
 from app.schemas.user_schema import (
     CreateUserRequest,
     CreateUserResponse,
+    GetUserResponse,
 )
 from app.utils.security import hash_password
 from app.utils.transactional import transactional
@@ -22,6 +24,36 @@ class UserService:
     ):
         self._user_repo = user_repo
         self._company_repo = company_repo
+
+    def get_user(self, user_id: str, include_company: bool):
+        user = (
+            self._user_repo.get_by_id_include_company(UUID(user_id))
+            if include_company
+            else self._user_repo.get_by_id(UUID(user_id))
+        )
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            )
+
+        response = GetUserResponse(
+            id=user.id,
+            username=user.username,
+            email=user.email,
+            first_name=user.first_name,
+            last_name=user.last_name,
+        )
+        if include_company:
+            response.company = GetCompanyResponse(
+                id=user.company.id,
+                name=user.company.name,
+                description=user.company.description,
+                mode=user.company.mode,
+                rating=user.company.rating,
+            )
+        return JSONResponse(
+            status_code=status.HTTP_200_OK, content=response.model_dump(mode="json")
+        )
 
     @transactional
     def create_user(self, request: CreateUserRequest):

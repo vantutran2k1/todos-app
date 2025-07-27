@@ -1,7 +1,7 @@
 from typing import Optional
 from uuid import UUID
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.user import User
 
@@ -12,6 +12,14 @@ class UserRepository:
 
     def get_by_id(self, user_id: UUID) -> Optional[User]:
         return self._db.query(User).filter(User.id == user_id).first()
+
+    def get_by_id_include_company(self, user_id: UUID) -> Optional[User]:
+        return (
+            self._db.query(User)
+            .options(joinedload(User.company))
+            .filter(User.id == user_id)
+            .first()
+        )
 
     def get_by_email(self, email: str) -> Optional[User]:
         return self._db.query(User).filter(User.email == email).first()

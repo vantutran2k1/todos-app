@@ -8,7 +8,11 @@ from sqlalchemy.orm import sessionmaker, Session
 from app.core.settings import settings
 
 # --- SQLAlchemy ---
-engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
+engine = create_engine(
+    settings.DATABASE_URL,
+    pool_pre_ping=True,
+    echo=True if settings.ENV == "dev" else False,
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

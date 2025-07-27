@@ -3,22 +3,31 @@ from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
 
-
-class CreateUserRequest(BaseModel):
-    username: str
-    password: str = Field(..., min_length=8, max_length=64)
-    email: EmailStr
-    first_name: Optional[str]
-    last_name: Optional[str]
-    company_id: Optional[UUID] = None
+from app.schemas.company_schema import GetCompanyResponse
 
 
-class CreateUserResponse(BaseModel):
+class BaseUserResponse(BaseModel):
     id: UUID
     username: str
     email: str
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+
+
+class GetUserResponse(BaseUserResponse):
+    company: Optional[GetCompanyResponse] = None
+
+
+class CreateUserRequest(BaseModel):
+    username: str
+    password: str = Field(..., min_length=8, max_length=64)
+    email: EmailStr
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    company_id: Optional[UUID] = None
+
+
+class CreateUserResponse(BaseUserResponse):
     company_id: Optional[UUID] = None
 
 

@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy import Column, String, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql.base import UUID
+from sqlalchemy.orm import relationship
 
 from app.models.base import Base
 
@@ -21,3 +22,4 @@ class User(Base):
     company_id = Column(
         UUID(as_uuid=True), ForeignKey("companies.id", ondelete="SET NULL")
     )
+    company = relationship("Company", back_populates="users")
