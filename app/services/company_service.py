@@ -30,7 +30,7 @@ class CompanyService:
         saved_company = self._company_repo.save(company)
 
         response = CreateCompanyResponse(
-            company_id=saved_company.id,
+            id=saved_company.id,
             name=saved_company.name,
             description=saved_company.description,
             mode=saved_company.mode,
@@ -38,5 +38,5 @@ class CompanyService:
         )
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
-            content=response.model_dump(mode="json"),
+            content=response.model_dump(mode="json", exclude_none=True),
         )

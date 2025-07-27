@@ -15,7 +15,7 @@ class AuthService:
         self._user_repo = user_repo
         self._user_session_repo = user_session_repo
 
-    def login(self, request: LoginRequest) -> LoginResponse:
+    def login(self, request: LoginRequest):
         user = self._user_repo.get_by_username(request.username)
         if not user:
             raise HTTPException(
@@ -30,7 +30,12 @@ class AuthService:
 
         session_token = generate_session_token()
         self._user_session_repo.save_user_session(user.id, session_token)
-        return LoginResponse(session_token=session_token)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=LoginResponse(session_token=session_token).model_dump(
+                mode="json", exclude_none=True
+            ),
+        )
 
     def logout(self, token: str):
         result = self._user_session_repo.delete_user_session(token)

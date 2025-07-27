@@ -52,7 +52,8 @@ class UserService:
                 rating=user.company.rating,
             )
         return JSONResponse(
-            status_code=status.HTTP_200_OK, content=response.model_dump(mode="json")
+            status_code=status.HTTP_200_OK,
+            content=response.model_dump(mode="json", exclude_none=True),
         )
 
     @transactional
@@ -97,5 +98,5 @@ class UserService:
         )
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
-            content=response.model_dump(mode="json"),
+            content=response.model_dump(mode="json", exclude_none=True),
         )

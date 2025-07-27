@@ -9,7 +9,7 @@ from app.repositories.company_repository import CompanyRepository
 from app.repositories.user_repository import UserRepository
 from app.repositories.user_session_repository import UserSessionRepository
 from app.services.auth_service import AuthService
-from app.services.company_services import CompanyService
+from app.services.company_service import CompanyService
 from app.services.user_service import UserService
 
 

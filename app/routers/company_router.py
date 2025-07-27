@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from app.dependencies.auth import get_current_admin_user_id
 from app.dependencies.services import get_company_service
 from app.schemas.company_schema import CreateCompanyRequest
-from app.services.company_services import CompanyService
+from app.services.company_service import CompanyService
 
 company_router = APIRouter()
 
