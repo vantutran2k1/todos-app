@@ -27,3 +27,9 @@ class TaskRepository:
     def save(self, task: Task) -> Task:
         self._db.add(task)
         return task
+
+    def update_task_status(self, task_id: UUID, status: str) -> bool:
+        return (
+            self._db.query(Task).filter(Task.id == task_id).update({"status": status})
+            > 0
+        )

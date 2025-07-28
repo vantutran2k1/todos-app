@@ -39,3 +39,7 @@ class CreateTaskRequest(BaseModel):
 
 class CreateTaskResponse(BaseTaskResponse):
     pass
+
+
+class UpdateTaskStatusRequest(BaseModel):
+    status: TaskStatus

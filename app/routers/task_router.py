@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query
 
 from app.dependencies.auth import get_current_user_id
 from app.dependencies.services import get_task_service
-from app.schemas.task_schema import CreateTaskRequest
+from app.schemas.task_schema import CreateTaskRequest, UpdateTaskStatusRequest
 from app.services.task_service import TaskService
 
 task_router = APIRouter()
@@ -34,3 +34,13 @@ def create_task(
     task_service: TaskService = Depends(get_task_service),
 ):
     return task_service.create_task(request, current_user)
+
+
+@task_router.put("/{task_id}/status")
+def update_task_status(
+    request: UpdateTaskStatusRequest,
+    task_id: str,
+    current_user: str = Depends(get_current_user_id),
+    task_service: TaskService = Depends(get_task_service),
+):
+    return task_service.update_task_status(task_id, request.status.value, current_user)

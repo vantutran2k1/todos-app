@@ -49,7 +49,8 @@ class TaskService:
                 description=task.description,
                 status=task.status,
                 priority=task.priority,
-            ) for task in tasks
+            )
+            for task in tasks
         ]
         meta = PaginationMeta(
             page=page,
@@ -92,5 +93,39 @@ class TaskService:
         )
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
+            content=response.model_dump(mode="json", exclude_none=True),
+        )
+
+    @transactional
+    def update_task_status(self, task_id: str, task_status: str, user_id: str):
+        task = self._task_repo.get_task(UUID(task_id))
+        if not (task and str(task.user_id) == user_id):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Task not found"
+            )
+
+        if task.status == task_status:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid task status",
+            )
+
+        count = self._task_repo.update_task_status(UUID(task_id), task_status)
+        if not count:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Error updating task",
+            )
+
+        response = GetTaskResponse(
+            id=task.id,
+            summary=task.summary,
+            description=task.description,
+            status=task_status,
+            priority=task.priority,
+            user_id=task.user_id,
+        )
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
             content=response.model_dump(mode="json", exclude_none=True),
         )
