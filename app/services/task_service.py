@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from app.models import Task
 from app.repositories.task_repository import TaskRepository
 from app.repositories.user_repository import UserRepository
+from app.schemas.pagination_meta import PaginationMeta, PaginatedResponse
 from app.schemas.task_schema import (
     CreateTaskRequest,
     CreateTaskResponse,
@@ -38,6 +39,28 @@ class TaskService:
             status_code=status.HTTP_200_OK,
             content=response.model_dump(mode="json", exclude_none=True),
         )
+
+    def get_tasks(self, user_id: str, page: int, size: int):
+        tasks, total = self._task_repo.get_tasks_of_user(UUID(user_id), page, size)
+        data = [
+            GetTaskResponse(
+                id=task.id,
+                summary=task.summary,
+                description=task.description,
+                status=task.status,
+                priority=task.priority,
+            ) for task in tasks
+        ]
+        meta = PaginationMeta(
+            page=page,
+            size=size,
+            total=total,
+            total_pages=(total + size - 1) // size,
+        )
+        response = PaginatedResponse(data=data, meta=meta).model_dump(
+            mode="json", exclude_none=True
+        )
+        return JSONResponse(status_code=status.HTTP_200_OK, content=response)
 
     @transactional
     def create_task(self, request: CreateTaskRequest, user_id: str):

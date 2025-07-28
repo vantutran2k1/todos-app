@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from app.dependencies.auth import get_current_user_id
 from app.dependencies.services import get_task_service
@@ -15,6 +15,16 @@ def get_task(
     task_service: TaskService = Depends(get_task_service),
 ):
     return task_service.get_task(task_id, current_user)
+
+
+@task_router.get("/")
+def get_tasks(
+    page: int = Query(1, ge=1),
+    size: int = Query(10, le=100),
+    current_user: str = Depends(get_current_user_id),
+    task_service: TaskService = Depends(get_task_service),
+):
+    return task_service.get_tasks(current_user, page, size)
 
 
 @task_router.post("/")
