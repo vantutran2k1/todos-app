@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.db.clients import get_db_session, get_redis_client
 from app.repositories.company_repository import CompanyRepository
+from app.repositories.task_repository import TaskRepository
 from app.repositories.user_repository import UserRepository
 from app.repositories.user_session_repository import UserSessionRepository
 
@@ -14,6 +15,10 @@ def get_user_repository(db: Session = Depends(get_db_session)) -> UserRepository
 
 def get_company_repository(db: Session = Depends(get_db_session)) -> CompanyRepository:
     return CompanyRepository(db=db)
+
+
+def get_task_repository(db: Session = Depends(get_db_session)) -> TaskRepository:
+    return TaskRepository(db=db)
 
 
 def get_user_session_repository(
