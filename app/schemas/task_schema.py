@@ -19,10 +19,15 @@ class TaskPriority(Enum):
 
 class BaseTaskResponse(BaseModel):
     id: UUID
+    summary: str
     description: Optional[str] = None
     status: str
     priority: str
     user_id: Optional[UUID] = None
+
+
+class GetTaskResponse(BaseTaskResponse):
+    pass
 
 
 class CreateTaskRequest(BaseModel):

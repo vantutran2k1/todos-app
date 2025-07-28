@@ -8,6 +8,15 @@ from app.services.task_service import TaskService
 task_router = APIRouter()
 
 
+@task_router.get("/{task_id}")
+def get_task(
+    task_id: str,
+    current_user: str = Depends(get_current_user_id),
+    task_service: TaskService = Depends(get_task_service),
+):
+    return task_service.get_task(task_id, current_user)
+
+
 @task_router.post("/")
 def create_task(
     request: CreateTaskRequest,
